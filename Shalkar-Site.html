@@ -1,0 +1,623 @@
+from pathlib import Path
+
+html = r'''<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Сайт-визитка Шалкара — будущего организатора турниров.">
+  <title>Шалкар | Организатор турниров</title>
+
+  <style>
+    /* ОБЩИЕ СТИЛИ
+       Здесь настраиваются цвета, шрифты, ширина контента и базовый вид сайта.
+       Чтобы изменить основной акцентный цвет, поменяйте значение --accent. */
+    :root {
+      --bg: #0b1020;
+      --surface: #121a2e;
+      --surface-light: #1a2540;
+      --text: #f4f7ff;
+      --muted: #aab5cc;
+      --accent: #62a8ff;
+      --accent-dark: #347fe0;
+      --line: rgba(255, 255, 255, 0.12);
+      --content-width: 1120px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min( calc(100% - 40px), var(--content-width));
+      margin: 0 auto;
+    }
+
+    .section {
+      padding: 82px 0;
+    }
+
+    .section-label {
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      line-height: 1.15;
+      margin-bottom: 22px;
+    }
+
+    .section-description {
+      color: var(--muted);
+      max-width: 680px;
+    }
+
+    /* ШАПКА САЙТА
+       Это верхняя панель с именем, профессией и навигацией.
+       Можно изменить имя, подпись и названия ссылок. Ссылки ведут к блокам ниже. */
+    .site-header {
+      border-bottom: 1px solid var(--line);
+      background: rgba(11, 16, 32, 0.92);
+    }
+
+    .header-inner {
+      min-height: 78px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.25;
+    }
+
+    .brand-name {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+
+    .brand-role {
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .navigation {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 22px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .navigation a:hover {
+      color: var(--accent);
+    }
+
+    /* ПЕРВЫЙ ЭКРАН
+       Это главный блок, который посетитель видит первым: слоган, краткое описание и фото.
+       Замените текст в квадратных скобках на свой. Чтобы поставить своё фото:
+       1) создайте рядом с index.html папку images;
+       2) положите туда фотографию, например profile.jpg;
+       3) замените src="https://placehold.co/..." на src="images/profile.jpg".
+       Для лучшего результата используйте горизонтальное или квадратное фото. */
+    .hero {
+      padding: 76px 0 88px;
+      background:
+        radial-gradient(circle at 78% 28%, rgba(98, 168, 255, 0.16), transparent 30%),
+        linear-gradient(135deg, #0b1020 0%, #101a31 100%);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      align-items: center;
+      gap: 56px;
+    }
+
+    .hero-kicker {
+      color: var(--accent);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4.8rem);
+      line-height: 1.03;
+      letter-spacing: -0.045em;
+      margin-bottom: 22px;
+    }
+
+    .hero h1 span {
+      color: var(--accent);
+    }
+
+    .hero-text {
+      color: var(--muted);
+      font-size: 1.08rem;
+      max-width: 590px;
+      margin-bottom: 30px;
+    }
+
+    .hero-button {
+      display: inline-block;
+      padding: 13px 22px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #071326;
+      font-weight: 700;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .hero-button:hover {
+      background: #8bc0ff;
+      transform: translateY(-2px);
+    }
+
+    .hero-photo {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.32);
+      background: var(--surface);
+    }
+
+    /* БЛОК «О СЕБЕ»
+       Здесь рассказывают о себе, своём интересе к профессии и целях.
+       Замените подсказки в квадратных скобках реальной информацией. */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 0.7fr 1.3fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    .about-mark {
+      min-height: 220px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background:
+        linear-gradient(145deg, rgba(98, 168, 255, 0.16), transparent 65%),
+        var(--surface);
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      font-size: 4rem;
+      font-weight: 800;
+    }
+
+    .about-copy p {
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    /* БЛОК «НАВЫКИ»
+       Это список профессиональных и личных навыков.
+       Оставьте только те навыки, которыми действительно владеете, и добавьте свои. */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 32px;
+    }
+
+    .skill-card {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+    }
+
+    .skill-number {
+      display: block;
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .skill-card h3 {
+      font-size: 1.05rem;
+      margin-bottom: 8px;
+    }
+
+    .skill-card p {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    /* БЛОК «ПРОЕКТЫ»
+       Здесь размещаются три проекта, в которых вы участвовали или которые создали.
+       Сейчас стоят нейтральные заглушки: впишите реальные названия, задачи и результаты.
+       Для замены картинки создайте папку images рядом с index.html, добавьте туда файл,
+       например tournament-1.jpg, и укажите src="images/tournament-1.jpg". */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 32px;
+    }
+
+    .project-card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface);
+    }
+
+    .project-image {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      background: var(--surface-light);
+    }
+
+    .project-content {
+      padding: 20px;
+    }
+
+    .project-type {
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .project-content h3 {
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+    }
+
+    .project-content p {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    /* БЛОК «ОБРАЗОВАНИЕ»
+       Здесь указываются учебное заведение, направление и период обучения.
+       Не оставляйте неподтверждённые сведения: заполните поля своими данными. */
+    .education-card {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 24px;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface);
+      margin-top: 30px;
+    }
+
+    .education-period {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .education-card h3 {
+      margin-bottom: 7px;
+    }
+
+    .education-card p {
+      color: var(--muted);
+    }
+
+    /* ПОДВАЛ
+       Это нижняя часть сайта с именем и контактами.
+       Добавьте актуальную почту или ссылки на профессиональные профили. */
+    .site-footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+
+    /* АДАПТИВНОСТЬ
+       Эти правила перестраивают сайт для планшетов и телефонов.
+       При необходимости можно менять размеры отступов и точку перестройки. */
+    @media (max-width: 800px) {
+      .hero-grid,
+      .about-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-grid {
+        gap: 34px;
+      }
+
+      .hero-photo {
+        max-width: 520px;
+        aspect-ratio: 16 / 10;
+      }
+
+      .skills-grid,
+      .projects-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .about-mark {
+        min-height: 150px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .container {
+        width: min( calc(100% - 28px), var(--content-width));
+      }
+
+      .header-inner {
+        align-items: flex-start;
+        flex-direction: column;
+        justify-content: center;
+        padding: 16px 0;
+      }
+
+      .navigation {
+        gap: 12px 16px;
+        font-size: 0.82rem;
+      }
+
+      .section {
+        padding: 58px 0;
+      }
+
+      .hero {
+        padding: 56px 0 64px;
+      }
+
+      .skills-grid,
+      .projects-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .education-card {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 22px;
+      }
+
+      .footer-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ШАПКА САЙТА -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#home" aria-label="На главную">
+        <span class="brand-name">ШАЛКАР</span>
+        <span class="brand-role">Организатор турниров</span>
+      </a>
+
+      <nav class="navigation" aria-label="Основная навигация">
+        <a href="#about">О себе</a>
+        <a href="#skills">Навыки</a>
+        <a href="#projects">Проекты</a>
+        <a href="#education">Образование</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ПЕРВЫЙ ЭКРАН -->
+  <main>
+    <section class="hero" id="home">
+      <div class="container hero-grid">
+        <div>
+          <p class="hero-kicker">Будущая профессия</p>
+          <h1>Шалкар<br><span>Организатор турниров</span></h1>
+          <p class="hero-text">
+            «Создавать события, объединяющие участников, команды и зрителей».
+            [При желании замените слоган на собственную фразу.]
+          </p>
+          <a class="hero-button" href="#about">Познакомиться</a>
+        </div>
+
+        <img
+          class="hero-photo"
+          src="https://placehold.co/800x1000/17233b/8fc2ff?text=YOUR+PHOTO"
+          alt="Заглушка для личной фотографии"
+        >
+      </div>
+    </section>
+
+    <!-- БЛОК «О СЕБЕ» -->
+    <section class="section" id="about">
+      <div class="container about-grid">
+        <div>
+          <p class="section-label">01 / О себе</p>
+          <h2 class="section-title">Кто я</h2>
+          <div class="about-mark" aria-hidden="true">S.</div>
+        </div>
+
+        <div class="about-copy">
+          <p>
+            Меня зовут Шалкар. Я интересуюсь сферой организации турниров и
+            хочу развиваться в направлении проведения соревновательных
+            мероприятий.
+          </p>
+          <p>
+            [Расскажите, почему вас заинтересовала эта профессия, какие
+            мероприятия вам интересны и к какой цели вы стремитесь.]
+          </p>
+          <p>
+            [Добавьте 1–2 предложения о своём опыте, интересах или личных
+            качествах, которые помогают вам в этой сфере.]
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- БЛОК «НАВЫКИ» -->
+    <section class="section" id="skills">
+      <div class="container">
+        <p class="section-label">02 / Компетенции</p>
+        <h2 class="section-title">Навыки</h2>
+        <p class="section-description">
+          [Укажите навыки, которыми вы уже владеете, или направления,
+          которые сейчас изучаете.]
+        </p>
+
+        <div class="skills-grid">
+          <article class="skill-card">
+            <span class="skill-number">01</span>
+            <h3>[Планирование]</h3>
+            <p>[Например: составление плана и расписания мероприятия.]</p>
+          </article>
+
+          <article class="skill-card">
+            <span class="skill-number">02</span>
+            <h3>[Коммуникация]</h3>
+            <p>[Например: взаимодействие с участниками и командой.]</p>
+          </article>
+
+          <article class="skill-card">
+            <span class="skill-number">03</span>
+            <h3>[Работа с информацией]</h3>
+            <p>[Например: подготовка регламента и публикаций.]</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- БЛОК «ПРОЕКТЫ» -->
+    <section class="section" id="projects">
+      <div class="container">
+        <p class="section-label">03 / Практика</p>
+        <h2 class="section-title">Проекты</h2>
+        <p class="section-description">
+          [Добавьте реальные турниры, учебные проекты или мероприятия.
+          Если опыта пока нет, можно указать учебные концепции и отметить их как учебные.]
+        </p>
+
+        <div class="projects-grid">
+          <article class="project-card">
+            <img
+              class="project-image"
+              src="https://placehold.co/800x500/17233b/8fc2ff?text=PROJECT+01"
+              alt="Заглушка изображения первого проекта"
+            >
+            <div class="project-content">
+              <p class="project-type">Проект 01</p>
+              <h3>[Название турнира]</h3>
+              <p>[Кратко опишите свою роль, задачу и результат.]</p>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <img
+              class="project-image"
+              src="https://placehold.co/800x500/17233b/8fc2ff?text=PROJECT+02"
+              alt="Заглушка изображения второго проекта"
+            >
+            <div class="project-content">
+              <p class="project-type">Проект 02</p>
+              <h3>[Название мероприятия]</h3>
+              <p>[Кратко опишите свою роль, задачу и результат.]</p>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <img
+              class="project-image"
+              src="https://placehold.co/800x500/17233b/8fc2ff?text=PROJECT+03"
+              alt="Заглушка изображения третьего проекта"
+            >
+            <div class="project-content">
+              <p class="project-type">Проект 03</p>
+              <h3>[Название учебного проекта]</h3>
+              <p>[Кратко опишите идею, этапы работы и полученный опыт.]</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- БЛОК «ОБРАЗОВАНИЕ» -->
+    <section class="section" id="education">
+      <div class="container">
+        <p class="section-label">04 / Образование</p>
+        <h2 class="section-title">Образование</h2>
+
+        <div class="education-card">
+          <div class="education-period">[Год — сейчас]</div>
+          <div>
+            <h3>[Название учебного заведения]</h3>
+            <p>[Факультет или специальность]</p>
+            <p>[Дополните курсом обучения, профильными предметами или достижениями.]</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ПОДВАЛ САЙТА -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© 2026 Шалкар. Сайт-визитка.</p>
+      <div class="footer-links">
+        <a href="mailto:[ваша-почта]">[Электронная почта]</a>
+        <a href="[ссылка-на-профиль]">[Профессиональный профиль]</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
+'''
+
+path = Path("/mnt/data/index.html")
+path.write_text(html, encoding="utf-8")
+print(f"Файл создан: {path} ({path.stat().st_size} байт)")
