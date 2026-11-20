@@ -26,4 +26,3 @@ docker run --rm -p 10000:10000 --name cloud-demo cloud-container-app:1.0
 ## Облачный деплой
 Приложение развернуто на Render как Web Service (Docker, тариф Free):
 https://qo3e9g6i76.onrender.com/
-EOF
