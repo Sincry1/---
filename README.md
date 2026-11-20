@@ -1,4 +1,3 @@
-cat > README.md << 'EOF'
 # Cloud Container Demo
 
 Небольшой Flask-сервис проверки состояния, упакованный в Docker и развернутый на Render.
